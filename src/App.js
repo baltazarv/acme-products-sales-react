@@ -1,13 +1,6 @@
 import React, { Component } from 'react';
-// import { Component } from 'react-dom';
 import ProductTypes from './ProductTypes';
-
-const data = [
-  { id: 1, name: 'foot', isSpecial: false},
-  { id: 2, name: 'bliss', isSpecial: false},
-  { id: 3, name: 'bass', isSpecial: true},
-  { id: 4, name: 'booze', isSpecial: true}
-];
+import axios from 'axios';
 
 class App extends Component {
   constructor() {
@@ -22,7 +15,7 @@ class App extends Component {
   }
 
   switchProducts(productId) {
-    const product = data.find(_product => _product.id === productId * 1);
+    let product = this.state.products.find(_product => _product.id === productId * 1);
     let specialProducts = [],
       regularProducts = [];
     if (product.isSpecial) {
@@ -40,24 +33,33 @@ class App extends Component {
       product.isSpecial = true;
       specialProducts = [...this.state.specialProducts, product];
     }
-    this.setState({ specialProducts, regularProducts });
+    axios.put('/api/products/' + product.id, product)
+    .then(result => result.data)
+    .then(() => {
+      this.setState({ specialProducts, regularProducts });
+    });
   }
 
   componentWillMount() {
     const regularProducts = [];
     const specialProducts = [];
-    data.forEach(product => {
-      product.key = product.id;
-      if (product.isSpecial) {
-        specialProducts.push(product);
-      } else {
-        regularProducts.push(product);
-      }
-    });
-    this.setState({
-      regularProducts,
-      specialProducts
-    });
+    axios.get('/api/products')
+      .then(result => result.data)
+      .then(products => {
+        this.setState({ products });
+        products.forEach(product => {
+          product.key = product.id;
+          if (product.isSpecial) {
+            specialProducts.push(product);
+          } else {
+            regularProducts.push(product);
+          }
+        });
+        this.setState({
+          regularProducts,
+          specialProducts
+        });
+      });
   }
 
   render() {
@@ -65,18 +67,22 @@ class App extends Component {
     const { switchProducts } = this;
     return (
       <div>
-        <strong>We've got { specialProducts.length } special product{ specialProducts.length > 1 ? 's' : '' } ({ regularProducts.length * 1 + specialProducts.length * 1 } total)</strong>
-       <div className="left-panel">
-          <ProductTypes
-            type={ this.PROD_REGULAR }
-            products={ regularProducts }
-            onPushProduct={ switchProducts } />
-        </div>
-        <div className="right-panel">
-          <ProductTypes
-            type={ this.PROD_SPECIAL }
-            products={ specialProducts }
-            onPushProduct={ switchProducts } />
+        <strong className="subtitle">We've got { specialProducts.length } special product{ specialProducts.length > 1 ? 's' : '' } ({ regularProducts.length * 1 + specialProducts.length * 1 } total)</strong>
+        <div className="flex-container">
+          <div className="panel">
+            <ProductTypes
+              type={ this.PROD_REGULAR }
+              submitType={ this.PROD_SPECIAL }
+              products={ regularProducts }
+              onPushProduct={ switchProducts } />
+              </div>
+              <div className="panel">
+              <ProductTypes
+              type={ this.PROD_SPECIAL }
+              submitType={ this.PROD_REGULAR }
+              products={ specialProducts }
+              onPushProduct={ switchProducts } />
+          </div>
         </div>
       </div>
     );

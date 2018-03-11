@@ -1,10 +1,34 @@
 body {
+  color: #12111e;
   font-family: 'helvetica', sans-serif;
 }
 
+h1 {
+  color:	#32a0d1;
+}
+
+.subtitle {
+  color: 	#243065;
+}
+
+.flex-container {
+  color: #243065;
+  display: -webkit-flex; /* Safari */
+  display: flex;
+  /* -webkit-justify-content: space-around;
+  justify-content: space-around; */
+  -webkit-align-content: space-around; /* Safari */
+  align-content: space-around;
+  /* -webkit-flex-direction: row;
+  flex-direction: row; */
+}
+
 .panel {
-  display: inline-block;
-  margin-left: 10px;
+  background-color:	#d6e6f3;
+  margin: 18px 11px;
+  padding: 0px 20px;
+  /* display: inline-block;
+  margin-left: 10px; */
 }
 
 .lef-panel {

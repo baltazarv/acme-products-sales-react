@@ -10,26 +10,30 @@ class Product extends Component {
     this.onSubmitProduct = this.onSubmitProduct.bind(this);
   }
   onSelectProduct(ev) {
+    if (ev.target.value) {
+      ev.target.parentElement.querySelector('button').disabled = false;
+    } else {
+      ev.target.parentElement.querySelector('button').disabled = true;
+    }
     this.setState({ productId: ev.target.value });
-    // why is this wrong?!
-    // console.log('prod id', this.state.productId);
   }
   onSubmitProduct(ev) {
     ev.preventDefault();
-    // console.log(this.state.productId,  this.props.onPushProduct(this.props.products[this.state.productId - 1]));
     if (this.state.productId) {
       this.props.onPushProduct(this.state.productId);
     }
+    const select = ev.target.querySelector('select');
+    select.selectedIndex = 0;
+    select.parentElement.querySelector('button').disabled = true;
   }
   render() {
-    const { type, products } = this.props;
-    const { productId } = this.state;
+    const { type, submitType, products } = this.props;
     const { onSelectProduct, onSubmitProduct } = this;
     return (
       <div className="panel">
         <h2>{ type } Products</h2>
         <form onSubmit={ onSubmitProduct } method="POST">
-          <select value={ productId } onChange={ onSelectProduct }>
+          <select onChange={ onSelectProduct }>
             <option value="">-- choose --</option>
             {
               products.map(product => {
@@ -39,8 +43,17 @@ class Product extends Component {
               })
           }
           </select>
-          <button disabled={ productId === 0 || productId === '' }>Make { type }</button>
+          <button disabled>Make { submitType }</button>
         </form>
+        <ul>
+        {
+          products.map(product => {
+            return (
+              <li key={ product.id }>{ product.name }</li>
+            );
+          })
+      }
+    </ul>
       </div>
     );
   }
